@@ -1,0 +1,20 @@
+services:
+  postgres:
+    container_name: mysystem
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: mysystem
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5400:5432"
+    networks:
+      - postgres_network
+    restart: unless-stopped
+
+networks:
+  postgres_network:
+    driver: bridge

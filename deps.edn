@@ -1,0 +1,41 @@
+{:paths ["src"]
+ :jvm-opts ["-Djdk.attach.allowAttachSelf"]
+ :deps {org.clojure/clojure    {:mvn/version "1.12.0"}
+
+        context/schema {:git/url "https://github.com/context-clj/system.git"
+                        :sha "c5860afcddd0755293eb84a466f610a00b4b7146"}
+
+        context/http {:git/url "https://github.com/context-clj/http.git"
+                      :sha "b49cd679e843fd2dd5ca269c0a4627216df2daf1"}
+
+        context/pg {:git/url "https://github.com/context-clj/pg.git"
+                    :sha "3c8b30bfbcc84c32ebd0d0c807e33278fdeaa45e"}}
+
+ :aliases
+ {:dev
+  {:extra-paths ["dev" "test" "resources" "shadow-target/shadow/dev" "shadow-target/stylo/dev"]
+   :jvm-opts ["-Dclojure.compiler.direct-linking=true"
+              "-XX:MaxDirectMemorySize=16g" "-XX:+UseLargePages"
+              "--add-opens=java.base/java.nio=ALL-UNNAMED"
+              "--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED"
+              "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"]}
+  :nrepl
+  {:extra-paths ["test"]
+   :extra-deps  {cider/cider-nrepl {:mvn/version "LATEST"}}
+   ;; :jvm-opts ^:replace ["-XX:-OmitStackTraceInFastThrow" "-Djdk.attach.allowAttachSelf"]
+   :jvm-opts ["-Djdk.attach.allowAttachSelf"]
+
+   :main-opts   ["-m" "nrepl.cmdline"
+                 "-b" "0.0.0.0"
+                 "--middleware"
+                 "[cider.nrepl/cider-middleware]"]}
+
+  :kaocha
+  {:extra-deps {lambdaisland/kaocha {:mvn/version "1.77.1236"}}
+   :extra-paths ["test"]
+   :jvm-opts   ^:replace ["-XX:-OmitStackTraceInFastThrow"]
+   :main-opts  ["-m" "kaocha.runner"]}
+
+  :run {:extra-paths ["dev" "libs/zd/src" "libs/zd/test"]
+        :jvm-opts    ["-XX:-OmitStackTraceInFastThrow"]
+        :main-opts   ["-m" "zd.hsm"]}}}
