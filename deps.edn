@@ -3,13 +3,13 @@
  :deps {org.clojure/clojure    {:mvn/version "1.12.0"}
 
         context/schema {:git/url "https://github.com/context-clj/system.git"
-                        :sha "c5860afcddd0755293eb84a466f610a00b4b7146"}
+                        :sha "933d5e29b042d90db3ba6911bdb934976875cc3d"}
 
         context/http {:git/url "https://github.com/context-clj/http.git"
-                      :sha "b49cd679e843fd2dd5ca269c0a4627216df2daf1"}
+                      :sha "397e076a5819486964594d0ca9166d1caaaa4f2b"}
 
         context/pg {:git/url "https://github.com/context-clj/pg.git"
-                    :sha "3c8b30bfbcc84c32ebd0d0c807e33278fdeaa45e"}}
+                    :sha "99d7f867922d77c5d660e4a94692a9c4a7fb4d6c"}}
 
  :aliases
  {:dev

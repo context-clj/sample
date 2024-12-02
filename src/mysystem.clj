@@ -20,8 +20,8 @@
 (system/defstart
   [context config]
 
-  (http/register-endpoint context :get "/" #'get-index)
-  (http/register-endpoint context :get "/Patient" #'get-patient)
+  (http/register-endpoint context {:method :get :path  "/" :fn  #'get-index})
+  (http/register-endpoint context {:method :get :path  "/Patient" :fn  #'get-patient})
 
   (migrate context)
   {})
@@ -29,7 +29,7 @@
 
 (comment
   (def context (system/start-system {:services ["http" "http.openapi" "pg" "mysystem"]
-                                     :http {:port 8882}
+                                     :http {:port 8883}
                                      :pg {:host "localhost" :port 5400 :user "admin" :database "mysystem" :password "admin"}}))
   (system/stop-system context)
 
