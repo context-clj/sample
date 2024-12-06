@@ -27,7 +27,7 @@
   [context config]
 
   (http/register-endpoint context {:method :get :path  "/" :fn  #'get-index})
-  (http/register-endpoint context {:method :get :path "/Patient" :fn #'get-patient})
+  (http/register-endpoint context {:method :get :path  "/Patient" :fn  #'get-patient})
 
   (migrate context)
   {})

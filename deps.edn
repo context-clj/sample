@@ -2,11 +2,10 @@
  :jvm-opts ["-Djdk.attach.allowAttachSelf"]
  :deps {org.clojure/clojure    {:mvn/version "1.12.0"}
 
-
         context/system      {:local/root "./libs/system"}
         context/pg          {:local/root "./libs/pg"}
         context/http        {:local/root "./libs/http"}
-        }
+        }}
 
  :aliases
  {:dev
