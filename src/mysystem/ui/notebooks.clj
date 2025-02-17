@@ -22,8 +22,7 @@
          {:class "hover:bg-gray-50"
           :href (h/href ["ui" "notebooks" (:id n)])}
          [:div (:title n)]
-         [:div.text-gray-600 (:description n)]
-         ])]]}))
+         [:div.text-gray-600 (:description n)]])]]}))
 
 
 (defn new-html [context request]
