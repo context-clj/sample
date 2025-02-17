@@ -19,13 +19,16 @@
   (pg/migrate-prepare context)
   (pg/migrate-up context))
 
+(defn patient-json [context request]
+  {:status 200
+   :headers {"content-type" "text/html"}
+   :body (pg.repo/select context {:table "patient"})})
+
 (system/defstart
   [context config]
-
-  (http/register-endpoint context {:method :get :path  "/" :fn  #'get-index})
-  (http/register-endpoint context {:method :get :path  "/Patient" :fn  #'get-patient})
-
   (migrate context)
+
+  (http/register-endpoint context {:method :get :path "/patient" :fn #'patient-json})
   {})
 
 
@@ -38,6 +41,9 @@
 
   (migrate context)
   (pg/generate-migration "init")
+  (pg/generate-migration "notebooks")
+  (pg/migrate-down context "notebooks")
+
 
   (pg/execute! context {:sql "select * from patient"})
 
