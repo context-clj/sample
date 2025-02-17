@@ -1,5 +1,6 @@
 (ns mysystem
   (:require [system]
+            [mysystem.ui]
             [http]
             [pg]
             [pg.repo]))
@@ -15,13 +16,8 @@
   {:status 200 :body (pg.repo/select context {:table "patient"})})
 
 (defn migrate [context]
-  (system/info context ::migrate "create tables etc..")
-  (pg.repo/register-repo
-   context {:table "patient"
-            :primary-key [:id]
-            :columns {:id {:type "text"}
-                      :resource {:type "jsonb"}}})
-  (pg.repo/upsert context {:table "patient" :resource {:id "pt-1", :name [{:family "John"}]}}))
+  (pg/migrate-prepare context)
+  (pg/migrate-up context))
 
 (system/defstart
   [context config]
@@ -34,10 +30,16 @@
 
 
 (comment
-  (def context (system/start-system {:services ["http" "http.openapi" "pg" "pg.repo" "mysystem"]
+  (def context (system/start-system {:services ["http" "http.openapi" "pg" "pg.repo" "mysystem" "mysystem.ui"]
                                      :http {:port 8884}
                                      :pg {:host "localhost" :port 5400 :user "admin" :database "mysystem" :password "admin"}}))
 
+  (system/stop-system context)
+
+  (migrate context)
+  (pg/generate-migration "init")
+
+  (pg/execute! context {:sql "select * from patient"})
 
   (pg/execute! context {:sql "drop table if exists patient"})
 
