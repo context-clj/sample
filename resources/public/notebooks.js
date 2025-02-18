@@ -1,3 +1,15 @@
+function updateCellOrder(id) {
+  let cells = Array.from(document.querySelectorAll('.cell')).map((c)=> { return c.dataset.cellid;});
+  // console.log('update cell order', cells)
+  fetch(`/ui/notebooks/update-cell-order`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(cells)
+  })
+}
+
 htmx.onLoad(function(content) {
   var sortable = content.querySelector("#sortable");
   var sortableInstance = new Sortable(sortable, {
@@ -7,11 +19,11 @@ htmx.onLoad(function(content) {
     ghostClass: 'bg-gray-200',
     onMove: function (evt) {
       // return evt.related.className.indexOf('htmx-indicator') === -1;
-      console.log('on-move')
+      // console.log('on-move')
     },
     onEnd: function (evt) {
-      console.log('end-drug')
-      // this.option("disabled", true);
+      updateCellOrder();
+      // console.log('end-drug - update order')
     }
   });
 

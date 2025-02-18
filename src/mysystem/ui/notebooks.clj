@@ -137,6 +137,13 @@
    (for [{:keys [id name]} [{:id "md"} {:id "sql"} {:id "rest"}]]
      [:option {:value id :selected (= id (get-in cell [:type]))} (or name id)])])
 
+(defn btn [{lbl :label :as opts} & cnt]
+  (into [:button.border.rounded-md.px-4.py-1.shadow-xs.bg-white.cursor-pointer (update opts :class (fn [x] (str x " hover:bg-blue-50 text-gray-900")))] cnt))
+
+(defn delete-cell [context request {cid :cid}]
+  (pg/execute! context {:sql ["delete from notebook_cells where id = ?" cid]})
+  {:status 200})
+
 (defn render-cell [context request id & [cell]]
   (let [cid (or (:id cell) (java.util.UUID/randomUUID))]
     [:form.cell.w-full.mt-4.border.p-2.bg-gray-100
@@ -150,26 +157,26 @@
      [:div.flex.space-x-4.items-center
       [:div.drag-handler.border.px-2.py-1.cursor-pointer "Drug"]
       (cell-types-select cid cell)
-      [:div.border.px-2.py-1.bg-white.cursor-pointer
-       {:hx-post (h/href ["ui" "notebooks" id "new-cell"])
-        :hx-target (str "#form-" cid)
-        "hx-on::after-request" "updateCellOrder()"
-        :hx-swap "beforebegin"}
-       "Add Cell Before"]
-      [:button.border.px-2.py-1.bg-white.cursor-pointer
-       {:hx-delete (str "/ui/notebooks/delete-cell/" cid)
+
+      (btn {:hx-post (h/href ["ui" "notebooks" id "new-cell"])
+            :hx-target (str "#form-" cid)
+            "hx-on::after-request" "updateCellOrder()"
+            :hx-swap "beforebegin"}
+           "Add Cell Before")
+
+      (btn {:hx-post (h/href ["ui" "notebooks" id "new-cell"])
+            :hx-target (str "#form-" cid)
+            "hx-on::after-request" "updateCellOrder()"
+            :hx-swap "afterend"}
+           "Add Cell After")
+      (btn
+       {:hx-delete (h/rpc #'delete-cell {:cid cid})
         :hx-target (str "#form-" cid)
         :hx-confirm "Delete cell?"
         :hx-swap "delete"}
-       "Delete"]
-      [:div.border.px-2.py-1.bg-white.cursor-pointer
-       {:hx-post (h/href ["ui" "notebooks" id "new-cell"])
-        :hx-target (str "#form-" cid)
-        "hx-on::after-request" "updateCellOrder()"
-        :hx-swap "afterend"}
-       "Add Cell After"]
+       "Delete")
       [:div.flex-1]
-      [:button.border.rounded.py-1.px-3.bg-white.shadow-xs {:class "hover:text-green-600" :type "submit" } "&#9654;"]]
+      (btn {:class "hover:text-green-600" :type "submit" } "&#9654;")]
      [:div.border.mt-2.rounded-md.p-2
       {:id (str "cell-editor-" cid)}
       (cell-editor context request (or (:type cell) "md") cid cell)]
@@ -197,7 +204,6 @@
          [:script {:src "https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/markdown/markdown.min.js", :integrity "sha512-DmMao0nRIbyDjbaHc8fNd3kxGsZj9PCU6Iu/CeidLQT9Py8nYVA5n0PqXYmvqNdU+lCiTHOM/4E7bM/G8BttJg==", :crossorigin "anonymous", :referrerpolicy "no-referrer"}]
          [:script {:src "https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/addon/hint/sql-hint.min.js", :integrity "sha512-O7YCIZwiyJYc9d/iPOSgEzhhlonTMGcmM1HmgYFffj5cGwVu2PLSzTaLvD9HSk8rSSf9rIpdhJPk8Yhu6wJBtA==", :crossorigin "anonymous", :referrerpolicy "no-referrer"}]
          [:style ".CodeMirror { border: 1px solid #eee; height: auto;}"]
-         [:script  (h/js-script "notebooks/update-cell-order")]
          [:div.border-b.py-4
           [:h1.text-xl.flex [:div.flex-1 (:title resource)] [:span.text-sm.border.p-2 "Edit"]]
           [:p.mt-4.py-2 (:description resource)]]
@@ -242,7 +248,8 @@
        (into []))
   {:status 200})
 
-(defn delete-cell [context {{cid :cid} :route-params}]
+
+(defn ui-rpc [context {{cid :cid} :route-params}]
   (pg/execute! context {:sql ["delete from notebook_cells where id = ?" cid]})
   {:status 200})
 

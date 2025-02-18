@@ -1,6 +1,7 @@
 (ns mysystem.ui.helpers
   (:require
    [system]
+   [http]
    [hiccup.core]
    [clojure.java.io :as io]
    [clojure.string :as str]))
@@ -86,3 +87,10 @@
 
 (defn js-script [name]
   (slurp (io/resource (str "scripts/"  name ".js"))))
+
+
+
+(defn rpc [fn-name & [params]]
+  (let [m (meta fn-name)
+        fn-nm  (str (:ns m) "/" (:name m))]
+    (str "/ui/rpc?" (http/encode-params (assoc params :method fn-nm)))))
