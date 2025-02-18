@@ -40,10 +40,12 @@
   (system/stop-system context)
 
   (migrate context)
-  (pg/generate-migration "init")
-  (pg/generate-migration "notebooks")
+  (pg.repo/clear-table-definitions-cache context)
+
   (pg/migrate-down context "notebooks")
 
+  ;; (pg/generate-migration "init")
+  ;; (pg/generate-migration "notebooks")
 
   (pg/execute! context {:sql "select * from patient"})
 

@@ -8,15 +8,14 @@ create table notebooks (
 );
 --$
 create table notebook_cells (
-  id serial primary key,
+  id uuid primary key,
   ts timestamptz default current_timestamp,
   updated_at timestamptz,
-  position int not null,
+  position int,
   notebook int4 not null,
   type text,
-  code text,
   params jsonb,
-  data jsonb
+  result jsonb
 );
 --$down
 drop table if exists notebook_cells;

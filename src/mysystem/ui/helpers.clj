@@ -2,6 +2,7 @@
   (:require
    [system]
    [hiccup.core]
+   [clojure.java.io :as io]
    [clojure.string :as str]))
 
 (defn hx-target [request]
@@ -82,3 +83,6 @@
                                        (into [:tr])
                                        )]
                                  )]))))
+
+(defn js-script [name]
+  (slurp (io/resource (str "scripts/"  name ".js"))))
