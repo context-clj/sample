@@ -5,6 +5,7 @@
    [pg.repo]
    [http]
    [mysystem.ui.helpers :as h]
+   [mysystem.ui.tailwindui :as t]
    [mysystem.ui.notebooks]
    [clojure.java.io]
    [clojure.string :as str]
@@ -13,27 +14,10 @@
 (system/defmanifest {:description "UI"})
 
 (defn index-html [context {{q :search} :query-params :as request}]
-  (let [rows [{:name "john"} {:name "jhn"}]]
-    (h/layout
-     context request
-     {:content
-      [:div.p-6
-       [:script (slurp (clojure.java.io/resource "selection.js"))]
-       [:div.flex.space-x-2.divide-x
-        (for [r rows]
-          [:div.border
-           (for [[k v] r]
-             [:div.p-2.cursor-pointer {"hx-on:click" "select(event)"
-                                       :data-value v
-                                       :data-field k} [:b k] v])])
-        [:form
-         [:b "name"]
-         [:script "function $(id) {return document.getElementById(id)}"]
-         [:input#name.border.p-2     {:name "name" :onkeyup "$('fullname').value = event.target.value"}]
-         [:input#family.border.p-2   {:name "family" :onkeyup "$('fullname').value = event.target.value"}]
-         [:input#fullname.border.p-2 {:name "full name"}]
-
-         ]]]})))
+  (h/l context request
+       [:div.p-6 (t/h2 "Atomic EHR")
+        (t/btn! "Save")
+        ]))
 
 
 (defn spinner []
@@ -164,6 +148,7 @@
   (http/register-endpoint context {:method :delete :path  "/ui/rpc"  :fn #'ui-rpc})
   (http/register-endpoint context {:method :put :path  "/ui/rpc"  :fn #'ui-rpc})
   (mysystem.ui.notebooks/mount-routes context)
+  (mysystem.ui.tailwindui/mount-routes context)
   :ok)
 
 (system/defstart [context _]

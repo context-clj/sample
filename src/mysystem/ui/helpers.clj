@@ -68,6 +68,13 @@
             {:status 500 :body (str "Error: no fragment for " trg)})))
       (hiccup-response request body))))
 
+(defn l [context request content]
+  (hiccup-response request
+   [:div#content.flex.items-top
+    (menu context request)
+    [:div.flex-1.my-2.mx-4 {:class "grow p-6 lg:rounded-lg lg:bg-white  lg:ring-1 lg:shadow-xs lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10"}
+     content]]))
+
 
 (defn href [path & [params]]
   (str "/" (str/join "/" path)
