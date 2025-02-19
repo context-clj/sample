@@ -35,14 +35,6 @@
 
          ]]]})))
 
-(defn patients-html [context {{q :search} :query-params :as request}]
-  (let [pts (pg.repo/select context {:table "patient"})]
-    (h/layout
-     context request
-     {:content
-      [:div.p-4 "Patients"
-       (for [pt pts]
-         [:div (pr-str pt)])]})))
 
 (defn spinner []
    [:span.spinner.inline {:role "status"}
@@ -57,21 +49,96 @@
     (spinner)
     (str (java.time.Instant/now)) (pr-str params)]))
 
-(defn encounters-html [context {{q :search} :query-params :as request}]
-  (let [pts (pg.repo/select context {:table "patient"})]
+
+
+(defn select [attrs opts & [value]]
+  [:select.px-2.py-2.border.rounded
+   attrs
+   (for [{:keys [id name]} opts]
+     [:option {:value id :selected (= value id)} (or name id)])])
+
+
+(defn patient-details [context request params]
+  (let [res (pg/execute! context {:sql "select * from information_schema.tables limit 10"})]
+    [:pre (pr-str res)]))
+
+(comment
+  (patient-details context {} {})
+  (preview-patient context {} {:id 1})
+
+  )
+
+(defn preview-patient [context _request {id :id}]
+  (let [pt (pg.repo/read context {:table "patient" :match {:id id}})]
+    [:div#preview.p-6.border.rounded.bg-gray-50
+     (h/h1 [:a.text-sky-600 {:href (str "/ui/patients/" id)} (:given pt) " " (:family pt)])
+     [:pre (cheshire.core/generate-string pt {:pretty true})]
+     [:button {:hx-get (h/rpc #'patient-details)} "Load more"]
+     ]))
+
+(defn patients-search [context request {q :search g :gender :as params}]
+  (let [pts (pg.repo/select
+             context {:table "patient"
+                      :where {:name   (when (and q (not (str/blank? q))) [:ilike
+                                                                          [:|| :family " " :given]
+                                                                          [:pg/param (str "%" q "%")]])
+                              :gender (when (and g (not (str/blank? g))) [:= :gender g])}})]
+    [:div#table.mt-4
+     [:div.text-xs.text-gray-400.py-1  (pr-str (dissoc params :method))]
+     (h/table [:id :name :birthdate :gender] pts
+              (fn [p]
+                [(:id p)
+                 [:a.text-sky-600.cursor-pointer
+                  {:hx-get (h/rpc #'preview-patient {:id (:id p)})
+                   :hx-target "#preview"
+                   :hx-swap "outerHTML"}
+                  (str (:given p) " " (:family p))]
+                 (str (:birthdate p))
+                 (:gender p)]))]))
+
+(defn patients-html [context {{q :search :as params} :query-params :as request}]
+  (h/layout
+   context request
+   {:content
+    [:div.p-4.flex.items-top
+     [:style " .spinner {display: none;} .htmx-request .spinner {display: inline;} "]
+     [:div.flex-1.px-4
+      [:form.flex.space-x-4.items-center
+       {:hx-get (h/rpc #'patients-search)
+        :hx-target "#table"
+        :hx-trigger "keyup delay:500ms, change"
+        :hx-ext "push-url-params"
+        :hx-indicator ".spinner"}
+       [:div.font-bold "Patients"]
+       [:input.border.px-4.py-2
+        {:name "search"
+         :autofocus true
+         :value q
+         :placeholder "name"}]
+       (select {:name "gender"} [{:id "" :name "any"} {:id "male"} {:id "female"}] (:gender params))
+       (spinner)]
+      (patients-search context request (:query-params request))]
+     [:div#preview]]}))
+
+(defn patient-show-html [context {{id :id} :route-params :as request}]
+  (let [pt (pg.repo/read context {:table "patient" :match {:id id}})]
     (h/layout
      context request
      {:content
-      [:div.p-4 [:style " .spinner {display: none;} .htmx-request .spinner {display: inline;} "]
-       [:div.flex.space-x-4.items-center
-        [:div "Encounters"]
-        [:button.border.p-2
-         {:hx-post (h/rpc #'action-fn {:id "test"})
-          :hx-indicator ".loader"
-          :hx-swap "outerHTML"}
-         "Press me "
-         (spinner)]]
-       (h/table [:id :ts :birthdate :gender :family :given] pts)]})))
+      [:div.p-6
+       (h/h1 [:a.text-sky-600 {:href (str "/ui/patients/" id)} (:given pt) " " (:family pt)])
+       [:div.border-b]
+       [:pre.mt-4 (cheshire.core/generate-string pt {:pretty true})]]})))
+
+(defn encounters-html [context {{q :search :as params} :query-params :as request}]
+  (h/layout
+   context request
+   {:content
+    [:div.p-4.flex.items-top
+     [:style " .spinner {display: none;} .htmx-request .spinner {display: inline;} "]
+     (h/h1 "TBD")]}))
+
+
 
 (defn get-fn [fn-str]
   (let [[ns-name _fn-name] (str/split fn-str #"/")]
@@ -83,11 +150,14 @@
         f (get-fn m)
         _ (println :fn f)
         res (f context request (:query-params request))]
-    res))
+    (if (vector? res)
+      (h/fragment res)
+      res)))
 
 (defn mount-routes [context]
   (http/register-endpoint context {:method :get :path "/" :fn #'index-html})
   (http/register-endpoint context {:method :get :path "/ui/patients" :fn #'patients-html})
+  (http/register-endpoint context {:method :get :path "/ui/patients/:id" :fn #'patient-show-html})
   (http/register-endpoint context {:method :get :path "/ui/encounters" :fn #'encounters-html})
   (http/register-endpoint context {:method :post :path  "/ui/rpc"  :fn #'ui-rpc})
   (http/register-endpoint context {:method :get :path  "/ui/rpc"  :fn #'ui-rpc})
@@ -107,7 +177,11 @@
 
   (pg/execute! context {:sql "select * from patient"})
 
-  (pg.repo/upsert context {:table "patient" :resource {:family "Doe" :given "John"}})
+  (pg.repo/upsert context {:table "patient" :resource {:family "Ivan" :given "Ivanov" :gender "male"}})
+  (pg.repo/upsert context {:table "patient" :resource {:family "Olivia" :given "Smith" :gender "female"}})
+  (pg.repo/upsert context {:table "patient" :resource {:family "Potter" :given "Garry" :gender "male" :birthdate "1990-01-01"}})
+
+  (pg.repo/upsert context {:table "patient" :resource {:family "Olga" :given "Plach" :gender "female" :birthdate "1970-02-02"}})
 
 
 

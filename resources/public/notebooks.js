@@ -34,3 +34,25 @@ htmx.onLoad(function(content) {
   });
 })
 
+
+function mdEditor(id) {
+  var editor = new CodeMirror.fromTextArea(
+    document.getElementById(id),
+    {
+      mode: 'text/x-markdown',
+      autoRefresh: true,
+      autoSize: true
+    }
+  ).setSize(null, 100);
+}
+
+function sqlEditor(id) {
+  var editor = new CodeMirror.fromTextArea(
+    document.getElementById(id),
+    {
+      mode: 'text/x-plsql',
+      autoRefresh: true,
+      autoSize: true
+    }
+  ).setSize(null, 100);
+}

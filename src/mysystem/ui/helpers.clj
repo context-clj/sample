@@ -2,28 +2,35 @@
   (:require
    [system]
    [http]
-   [hiccup.core]
+   [hiccup2.core]
    [clojure.java.io :as io]
    [clojure.string :as str]))
 
 (defn hx-target [request]
   (get-in request [:headers "hx-target"]))
 
+(defn hiccup [content]
+  (str (hiccup2.core/html content)))
+
+(def raw hiccup2.core/raw)
+
 (defn html-response [body]
   {:status 200
    :headers {"content-type" "text/html"}
-   :body (hiccup.core/html body)})
+   :body (hiccup body)})
+
 
 (defn hiccup-response [request body]
   {:status 200
    :headers {"content-type" "text/html"}
-   :body (hiccup.core/html
+   :body (hiccup
           (if (hx-target request)
             body
             [:html
              [:head
               [:script {:src "/static/tw.js"}]
               [:script {:src "/static/htmx.js"}]
+              [:script {:src "/static/app.js"}]
               [:style {:rel "stylesheet"} "body { font-family: sans-serif; font-size: 13px;}"]
               [:meta {:name "htmx-config", :content "{\"scrollIntoViewOnBoost\":false}"}]]
              [:body.bg-zinc-100.text-gray-600 {:hx-boost "true"} body]]))})
@@ -31,7 +38,7 @@
 (defn fragment [content]
   {:status 200
    :headers {"content-type" "text/html"}
-   :body (hiccup.core/html content)})
+   :body (hiccup content)})
 
 (defn menu [context request]
   [:div.my-4.p-6.flex-col
@@ -53,9 +60,9 @@
                  [:div#content.flex-1 (if (fn? cnt) (cnt) cnt)])]]]
     (if-let [trg (hx-target request)]
       (if (= "content" trg)
-        {:status 200 :body (hiccup.core/html body)}
+        {:status 200 :body (hiccup body)}
         (if-let [trg-fn (get fragments-map (keyword trg))]
-          {:status 200 :body (hiccup.core/html (if (vector? trg-fn) trg-fn (trg-fn)))}
+          {:status 200 :body (hiccup (if (vector? trg-fn) trg-fn (trg-fn)))}
           (do
             (println (str "Error: no fragment for " trg))
             {:status 500 :body (str "Error: no fragment for " trg)})))
@@ -94,3 +101,20 @@
   (let [m (meta fn-name)
         fn-nm  (str (:ns m) "/" (:name m))]
     (str "/ui/rpc?" (http/encode-params (assoc params :method fn-nm)))))
+
+(defn hiddens [obj]
+  [:div (for [[k v] obj] [:input {:type "hidden" :name k :value v}])])
+
+(defn btn [opts & cnt]
+  (into [:button.border.rounded-md.px-4.py-1.shadow-xs.bg-white.cursor-pointer (update opts :class (fn [x] (str x " hover:bg-blue-50 text-gray-900")))] cnt))
+
+(defn js [& content]
+  [:script (raw (str/join content))])
+
+(defn css [& content]
+  [:style (raw (str/join content))])
+
+;; (hiccup [:a {:href "ups"}])
+
+(defn h1 [opts & content]
+  (into [:h1.text-lg.flex.items-center opts] content))
