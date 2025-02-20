@@ -93,12 +93,6 @@
                    :hx-target  (str "#" (build-list-items-id (:id props)))
                    :hx-trigger "keyup changed delay:300ms"})]])
 
-(defn list-items [props items]
-  [:div {:id    (build-list-items-id (:id props))
-         :class "mt-[8px] space-y-[2px] overflow-y-auto pr-[1px] max-h-[338px]"}
-   (or (seq items)
-       (list-item props {:title "Not found"}))])
-
 (defn list-item [props item]
   [:div (merge {:class         list-item-class
                 :data-selected (str (= (:value item) (get-in props [:value :value])))}
@@ -108,6 +102,12 @@
                   :hx-target     (str "#" (:id props))
                   :hx-swap       "outerHTML"}))
    (:title item)])
+
+(defn list-items [props items]
+  [:div {:id    (build-list-items-id (:id props))
+         :class "mt-[8px] space-y-[2px] overflow-y-auto pr-[1px] max-h-[338px]"}
+   (or (seq items)
+       (list-item props {:title "Not found"}))])
 
 (defn dropdown-menu [props]
   [:div {:class menu-class
@@ -124,6 +124,9 @@
    (selected-item-view props)
    (dropdown-menu props)])
 
+(declare on-select-resource-type)
+(declare on-open)
+(declare on-close)
 
 ;; Usage example
 
