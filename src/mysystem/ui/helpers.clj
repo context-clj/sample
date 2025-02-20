@@ -55,7 +55,7 @@
 (defn layout [context request fragments-map]
   (let [body [:div#content.flex.items-top
               (menu context request)
-              [:div.flex-1.my-2.mx-4 {:class "grow p-6 lg:rounded-lg lg:bg-white  lg:ring-1 lg:shadow-xs lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10"}
+              [:div.flex-1.my-2.mx-4 {:class "grow p-6 lg:rounded-lg lg:bg-white  lg:ring-1 lg:shadow-xs lg:ring-zinc-950/5 "} ;;dark:lg:bg-zinc-900 dark:lg:ring-white/10
                (when-let [cnt (:content fragments-map)]
                  [:div#content.flex-1 (if (fn? cnt) (cnt) cnt)])]]]
     (if-let [trg (hx-target request)]
