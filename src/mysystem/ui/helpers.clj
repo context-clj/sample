@@ -30,6 +30,7 @@
              [:head
               [:script {:src "/static/tw.js"}]
               [:script {:src "/static/htmx.js"}]
+              [:script {:src "/static/multi-swap.js"}] ;; https://v1.htmx.org/extensions/multi-swap/
               [:script {:src "/static/app.js"}]
               [:style {:rel "stylesheet"} "body { font-family: sans-serif; font-size: 13px;}"]
               [:meta {:name "htmx-config", :content "{\"scrollIntoViewOnBoost\":false}"}]]

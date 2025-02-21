@@ -1,6 +1,7 @@
 (ns mysystem.toolkit
   (:require [mysystem.ui.helpers :as h]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [mysystem.ui.components.dropdown :as dropdown]))
 
 (def selected-item-class
   ["flex"
@@ -172,10 +173,55 @@
              :on-open   #'on-open
              :value     (get-selected-resource-type-view (:selected-value params))}))
 
+;; Usage example 2
+
+(def resource-type-options
+  [{:view "Patient" :id "patient"}
+   {:view "Organization" :id "organization"}
+   {:view "Encounter" :id "encounter"}
+   {:view "Practitioner" :id "practitioner"}
+   {:view "DocumentReference" :id "documentreference"}])
+
+(defn get-selected-resource-type [value]
+  (->> resource-type-options
+       (filter #(= (:id %) value))
+       (first)))
+
+(declare on-close-resource-types-dropdown)
+(declare on-open-resource-types-dropdown)
+
+(def dropdown-handlers
+  {:on-open  #'on-open-resource-types-dropdown
+   :on-close #'on-close-resource-types-dropdown})
+
+(defn on-close-resource-types-dropdown [context request {:keys [component-id selected-value-id]}]
+  ;; TODO: how to preserve selected-value dom element
+  (dropdown/on-close
+   dropdown-handlers
+   {:dropdown-id    component-id
+    :selected-value (get-selected-resource-type selected-value-id)}))
+
+(defn on-open-resource-types-dropdown [context request {:keys [component-id selected-value-id]}]
+  (dropdown/on-open
+   dropdown-handlers
+   {:dropdown-id    component-id
+    :selected-value (get-selected-resource-type selected-value-id)}))
+
+
 (defn index [context request]
   (h/layout
    context request
    {:content [:div {:class "max-w-[500px]"}
-              (dropdown {:id        "dropdown-demo-example"
+              (mysystem.ui.components.dropdown/view
+               {:id      "resource-type-dropdown"
+                :value   {:view "DocumentReference" :id "documentreference"}
+                :on-open #'on-open-resource-types-dropdown
+                :options [{:view "Patient" :id "patient"}
+                          {:view "Organization" :id "organization"}
+                          {:view "Encounter" :id "encounter"}
+                          {:view "Practitioner" :id "practitioner"}
+                          {:view "DocumentReference" :id "documentreference"}]})
+
+              #_(dropdown {:id        "dropdown-demo-example"
                          :on-open   #'on-open
                          :value     {:title "Patient" :value "patient"}})]}))
