@@ -10,6 +10,7 @@
    [mysystem.ui.sdc]
    [clojure.java.io]
    [clojure.string :as str]
+   [mysystem.toolkit]
    [cheshire.core]))
 
 (system/defmanifest {:description "UI"})
@@ -148,6 +149,9 @@
   (http/register-endpoint context {:method :get :path  "/ui/rpc"  :fn #'ui-rpc})
   (http/register-endpoint context {:method :delete :path  "/ui/rpc"  :fn #'ui-rpc})
   (http/register-endpoint context {:method :put :path  "/ui/rpc"  :fn #'ui-rpc})
+
+  (http/register-endpoint context {:method :get :path "/ui/kit" :fn #'mysystem.toolkit/index})
+
   (mysystem.ui.notebooks/mount-routes context)
   (mysystem.ui.tailwindui/mount-routes context)
   (mysystem.ui.sdc/mount-routes context)
