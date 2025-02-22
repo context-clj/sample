@@ -7,6 +7,7 @@
    [mysystem.ui.helpers :as h]
    [mysystem.ui.tailwindui :as t]
    [mysystem.ui.notebooks]
+   [mysystem.ui.sdc]
    [clojure.java.io]
    [clojure.string :as str]
    [cheshire.core]))
@@ -149,6 +150,7 @@
   (http/register-endpoint context {:method :put :path  "/ui/rpc"  :fn #'ui-rpc})
   (mysystem.ui.notebooks/mount-routes context)
   (mysystem.ui.tailwindui/mount-routes context)
+  (mysystem.ui.sdc/mount-routes context)
   :ok)
 
 (system/defstart [context _]

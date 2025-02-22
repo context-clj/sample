@@ -10,7 +10,7 @@
   (get-in request [:headers "hx-target"]))
 
 (defn hiccup [content]
-  (str (hiccup2.core/html content)))
+  (str "<!DOCTYPE html>\n" (hiccup2.core/html content)))
 
 (def raw hiccup2.core/raw)
 
@@ -62,7 +62,9 @@
       (if (= "content" trg)
         {:status 200 :body (hiccup body)}
         (if-let [trg-fn (get fragments-map (keyword trg))]
-          {:status 200 :body (hiccup (if (vector? trg-fn) trg-fn (trg-fn)))}
+          {:status 200
+           :headers {"content-type" "text/html; charset=utf-8"}
+           :body (hiccup (if (vector? trg-fn) trg-fn (trg-fn)))}
           (do
             (println (str "Error: no fragment for " trg))
             {:status 500 :body (str "Error: no fragment for " trg)})))

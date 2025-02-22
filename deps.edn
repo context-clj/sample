@@ -4,6 +4,7 @@
         context/system      {:local/root "./libs/system"}
         hiccup/hiccup       {:mvn/version "2.0.0-RC4"}
         context/pg          {:local/root "./libs/pg"}
+        fhir/fhirpath       {:local/root "./libs/fhirpath"}
         context/http        {:local/root "./libs/http"}}
  :aliases
  {:dev
