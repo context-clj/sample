@@ -336,7 +336,7 @@
         exprs (get res "exprs")
         calcs (->> exprs
                   (reduce (fn [acc [k e]]
-                            (assoc acc k (fp/fp e res vars))
+                            (assoc acc k (try (fp/fp e res vars) (catch Exception e (str "ERROR:" (.getMessage e)))))
                             ) {}))]
     (h/fragment
      [:div
