@@ -25,20 +25,34 @@
 .dropdown:hover .dropdown-content {display: block;}
 "])
 
-(defn tables-view [context _request & [params]]
+(defn tables-list [context {{q :search} :query-params {tsch :schema ttbl :table} :route-params :as request} & [params]]
   (let [tables (pg/execute! context {:dsql {:select :* :from :information_schema.tables
+                                            :where (when (and q (not (str/blank? q))) [:ilike :table_name [:pg/param (str "%" q "%")]])
                                             :order-by [:pg/list :table_schema :table_name]}})]
-    [:div {:class "h-screen overflow-y-auto"}
+    [:div
      (for [[sch tables] (group-by :table_schema tables)]
-       [:details {:open (= sch (:schema params))}
+       [:details {:open (or q (= sch tsch))}
+        [:style ".menu-active { font-weight: bold }"]
         [:summary {:class "px-4 py-1 border-b hover:pg-gray-100 font-bold bg-gray-100"} sch]
         [:div {:class "border-b"}
          (for [tbl tables]
            [:a {:hx-get (str "/ui/db/tables/" sch "/" (:table_name tbl))
                 :hx-target "#page"
                 :hx-push-url "true"
-                :class "block pl-6 py-1 text-xs cursor-pointer hover:bg-gray-100"}
+                :onclick "document.querySelectorAll('.menu-active').forEach((x)=> x.classList.remove('menu-active')); event.target.classList.add('menu-active'); "
+                :class ["block pl-6 py-1 text-xs cursor-pointer hover:bg-gray-100"
+                        (when (= (:table_name tbl) ttbl) "menu-active")]}
             (:table_name tbl)])]])]))
+
+(defn tables-view [context request & [params]]
+  [:div {:class "h-screen overflow-y-auto"}
+   [:input {:class "border-b px-4 py-2 border-b w-full bg-yellow-50"
+            :placeholder "filter.."
+            :name "search"
+            :hx-target "#tables-list"
+            :hx-trigger "keyup changed delay:300ms"
+            :hx-get (h/rpc #'tables-list)}]
+   [:div#tables-list (tables-list context request params)]])
 
 (defn layout [context request content params]
   (h/hiccup-response
@@ -133,12 +147,9 @@
     [:div#page {:class "flex-1"}]]))
 
 
-
-
 (defn mount-routes [context]
   (http/register-endpoint context {:method :get :path  "/ui/db"       :fn #'index-html})
   (http/register-endpoint context {:method :get :path  "/ui/db/tables/:schema/:table"       :fn #'table-html})
-
   )
 
 
