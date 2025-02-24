@@ -124,26 +124,26 @@ label:has(input[type=radio]:checked)  {
                    :hx-get (h/rpc #'calendar-month {:year year :month (inc month)})} "next"]]]
         [:tr
          (for [day ["Mon" "Tue" "Wed" "Thu" "Fri" "Sat" "Sun"]]
-           [:th day])]]
+           [:th {:class "px-2 py-1 font-bold text-gray-500 border border-gray-150"}day])]]
        [:tbody
         (for [week weeks]
           [:tr
            (for [day week
                  :let [current (when day (java.time.LocalDate/of year month day))]]
              [:td.day
-              {:class ["border border-gray-150" (when (= current today) "border-sky-300 z-100")]}
+              {:class ["border border-gray-150" ]}
               (when day
                 (let [d (.toString current)
                       hss (get holidays d)]
-                  [:div.tooltip
-                   [:label {:class ["block px-2 py-1 hover:bg-gray-100 cursor-pointer text-center text-gray-500"]}
-                    (when hss [:div {:class "bg-green-400 w-2 h-2 absolute top-0 right-0 rounded-full"}])
-                    [:input.radio-date {:type "radio" :name "selected-date" :value d}]
-                    day
-                    (when hss
-                      [:div.tooltiptext {:class "border shadow-md p-4 bg-white whitespace-nowrap"}
-                       (for [hs hss]
-                         [:div (get-in hs [:name 0 :text])])])]])
+                  [:label.tooltip {:class ["block px-2 py-1 rounded-md hover:bg-gray-100 cursor-pointer text-center text-gray-500"
+                                           (when (= current today) "border border-sky-300 z-100")]}
+                   (when hss [:div {:class "bg-green-200 w-2 h-2 absolute top-0 right-0 rounded-full"}])
+                   [:input.radio-date {:type "radio" :name "selected-date" :value d}]
+                   day
+                   (when hss
+                     [:div.tooltiptext {:class "border shadow-md p-4 bg-white whitespace-nowrap"}
+                      (for [hs hss]
+                        [:div (get-in hs [:name 0 :text])])])])
                 )])])]]]
      [:div#result ]]))
 
