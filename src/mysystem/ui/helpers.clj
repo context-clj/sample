@@ -50,6 +50,7 @@
                     ["/ui/tailwindui" "Tailwind"]
                     ["/ui/htmx" "htmx"]
                     ["/ui/calendar" "Calendar"]
+                    ["/ui/db" "db"]
                     ]]
      [:a.my-2.px-4.text-sky-600.cursor-pointer.block.border-l-4
       {:hx-push-url "true"

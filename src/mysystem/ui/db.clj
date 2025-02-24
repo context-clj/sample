@@ -111,19 +111,19 @@
            (:column_name c)])]]
       [:tbody
        (for [r rows]
-         [:tr {:class "border-b hover:bg-gray-100"}
+         [:tr {:class "border-b hover:border-gray-400"}
           (for [{tp :data_type :as c} columns]
             [:td {:class ["px-2 py-1 text-gray-600 text-xs text-top" (when (contains? #{"integer"} tp) "text-right")]}
              (let [v (get r (keyword (:column_name c)))]
                (cond
+                 (nil? v) [:span {:class "text-gray-500"} "NULL"]
                  (contains? #{"text" "character varying" "char" "\"char\"" "uuid"} tp) [:span {:class "text-gray-700"} v]
                  (contains? #{"name" "oid"} tp) [:span {:class "text-pink-900"} v]
                  (contains? #{"timestamp without time zone" "timestamp with time zone"} tp) (str v)
                  (contains? #{"integer" "bigint" "real" "numeric" "smallint" "xid"} tp) [:span {:class "text-blue-600"} v]
                  (contains? #{"boolean"} tp) [:span {:class "text-blue-600"} (str v)]
-                 (contains? #{"jsonb"} tp) [:pre (cheshire.core/generate-string v {:pretty true})]
+                 (contains? #{"jsonb"} tp) [:details [:summary (pr-str (keys v))] [:pre (cheshire.core/generate-string v {:pretty true})]]
                  (contains? #{"ARRAY"} tp) (str "[" (->> v (mapv str) (str/join ", ")) "]")
-                 (nil? v) [:span {:class "text-gray-500"} "NULL"]
                  :else
                  [:div [:b (pr-str (:data_type c))] " " (pr-str v)])
                )])])]]]))
@@ -136,6 +136,7 @@
       :else (layout
              [:div {:class "p-4 bg-white"}
               (h/h1 [:span tbl] (columns-selector context request))
+              [:div {:class "border-b"}]
               [:div#table-data (table-data context request)]]))))
 
 (defn index-html [context request]
