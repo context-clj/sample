@@ -94,9 +94,10 @@
   [:span "Done!"])
 
 (defn index-html [context request]
-  (h/hiccup-response
-   request
-   [:div {:class "max-w-container relative mx-auto mt-20 w-full px-8 sm:px-12 lg:px-8"}
+  (h/layout
+   context request
+   {:content
+ [:div {:class "max-w-container relative mx-auto mt-20 w-full px-8 sm:px-12 lg:px-8"}
     (h2 "Primary buttons")
     (demo-row
      (btn-xs! "Button text")
@@ -130,11 +131,7 @@
          [:span.flex-1 "My Header"]
          [:input#name {:type "text" :name "name" :class "block rounded-full bg-white px-4 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" :placeholder "Jane Smith"}]        (btn  "Make it")
          (btn! "Do it")
-         )]
-
-
-    ]
-   ))
+         )]]}))
 
 
 
@@ -150,6 +147,5 @@
   (def context mysystem/context)
 
   (mount-routes context)
-
 
  )

@@ -421,9 +421,7 @@
       [:details
        [:summary "sever-submit"]
        [:pre#result {:class "mt-4 border rounded-md p-4 text-xs bg-gray-100 flex-1"}]]
-      [:details
-       [:summary "server"]
-       [:pre#server-result {:class "mt-4 border rounded-md p-4 text-xs bg-gray-100 flex-1"}]]]
+      [:pre#server-result {:class "mt-4 border rounded-md p-4 text-xs bg-gray-100 flex-1"}]]
      [:script {:src "/static/forms.js"}]]}))
 
 (defn mount-routes [context]

@@ -45,7 +45,12 @@
   [:div.my-4.p-6.flex-col
    (for [[url lbl] [["/ui/patients" "Patients"]
                     ["/ui/notebooks" "Notebooks"]
-                    ["/ui/encounters" "Encounters"]]]
+                    ["/ui/encounters" "Encounters"]
+                    ["/ui/sdc" "SDC"]
+                    ["/ui/tailwindui" "Tailwind"]
+                    ["/ui/htmx" "htmx"]
+                    ["/ui/calendar" "Calendar"]
+                    ]]
      [:a.my-2.px-4.text-sky-600.cursor-pointer.block.border-l-4
       {:hx-push-url "true"
        :class (if (str/starts-with? (:uri request) url) "border-sky-600" "border-transparent")
@@ -98,14 +103,10 @@
                                   (->> columns
                                        (mapv (fn [c] [:th {:class "px-2 py-1 text-left text-sm font-semibold"}
                                                      (name c)]))
-                                       (into [:tr])
-                                       )]
-                                 )]))))
+                                       (into [:tr]))])]))))
 
 (defn js-script [name]
   (slurp (io/resource (str "scripts/"  name ".js"))))
-
-
 
 (defn rpc [fn-name & [params]]
   (let [m (meta fn-name)
@@ -126,5 +127,8 @@
 
 ;; (hiccup [:a {:href "ups"}])
 
-(defn h1 [opts & content]
-  (into [:h1.text-lg.flex.items-center opts] content))
+(defn h1 [& content]
+  (into [:h1 {:class "mt-4 mb-2 text-xl flex items-center"}] content))
+
+(defn h2 [& content]
+  (into [:h2 {:class "mt-4 mb-2 text-lg flex items-center"}] content))

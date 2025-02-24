@@ -8,6 +8,8 @@
    [mysystem.ui.tailwindui :as t]
    [mysystem.ui.notebooks]
    [mysystem.ui.sdc]
+   [mysystem.ui.htmx]
+   [mysystem.ui.calendar]
    [clojure.java.io]
    [clojure.string :as str]
    [mysystem.toolkit]
@@ -155,6 +157,7 @@
   (mysystem.ui.notebooks/mount-routes context)
   (mysystem.ui.tailwindui/mount-routes context)
   (mysystem.ui.sdc/mount-routes context)
+  (mysystem.ui.htmx/mount-routes context)
   :ok)
 
 (system/defstart [context _]
