@@ -128,7 +128,7 @@
 ;; (hiccup [:a {:href "ups"}])
 
 (defn h1 [& content]
-  (into [:h1 {:class "mt-4 mb-2 text-xl flex items-center"}] content))
+  (into [:h1 {:class "mt-4 mb-2 text-xl flex items-center space-x-4"}] content))
 
 (defn h2 [& content]
-  (into [:h2 {:class "mt-4 mb-2 text-lg flex items-center"}] content))
+  (into [:h2 {:class "mt-4 mb-2 text-lg flex items-center space-x-4"}] content))

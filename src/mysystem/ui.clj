@@ -10,6 +10,7 @@
    [mysystem.ui.sdc]
    [mysystem.ui.htmx]
    [mysystem.ui.calendar]
+   [mysystem.ui.db]
    [clojure.java.io]
    [clojure.string :as str]
    [mysystem.toolkit]
@@ -158,6 +159,7 @@
   (mysystem.ui.tailwindui/mount-routes context)
   (mysystem.ui.sdc/mount-routes context)
   (mysystem.ui.htmx/mount-routes context)
+  (mysystem.ui.db/mount-routes context)
   :ok)
 
 (system/defstart [context _]

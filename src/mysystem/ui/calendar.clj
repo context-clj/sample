@@ -3,45 +3,8 @@
    [system]
    [mysystem.ui.helpers :as h]
    [http]
-   [clojure.string :as str]
-            [rewrite-clj.node :as n]
-   [cljfmt.core :as cljfmt]))
+   [clojure.string :as str]))
 
-(comment
-  (datetime context {} {})
-
-  )
-
-
-
-(defn calendar-month [year month]
-  (let [date (java.time.LocalDate/of year month 1)
-        days-in-month (.lengthOfMonth date)
-        first-dow (.getValue (.getDayOfWeek date))
-        offset (dec first-dow)
-        weeks (partition 7 7 nil
-                (concat (repeat offset nil)
-                       (range 1 (inc days-in-month))))]
-    [:div.calendar
-     [:h3 (.format date
-            (java.time.format.DateTimeFormatter/ofPattern "MMMM yyyy"))]
-
-     [:table.calendar-table
-      [:thead
-       [:tr
-        (for [day ["Mon" "Tue" "Wed" "Thu" "Fri" "Sat" "Sun"]]
-          [:th day])]]
-
-      [:tbody
-       (for [week weeks]
-         [:tr
-          (for [day week
-                :let [current (when day
-                              (java.time.LocalDate/of year month day))
-                      today (java.time.LocalDate/now)]]
-            [:td.day
-             {:class ["border px-2 py-1 hover:bg-blue-100 cursor-pointer text-center" (when (= current today) "bg-blue-200")]}
-             (or day "")])])]]]))
 
 (defn preview [context request opts]
   [:pre {:class "mt-4 border p-4" }(pr-str (http/form-decode (slurp (:body request))))])
@@ -148,7 +111,6 @@ label:has(input[type=radio]:checked)  {
      [:div#result ]]))
 
 
-
 (defn index-html [context request]
   (let [today (java.time.LocalDate/now)]
     (h/layout
@@ -156,10 +118,6 @@ label:has(input[type=radio]:checked)  {
      {:content
       [:div
        (calendar-month context request {:year (.getYear today) :month (.getMonthValue today)})]})))
-
-
-
-
 
 
 (defn mount-routes [context]
