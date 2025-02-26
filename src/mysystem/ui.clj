@@ -10,6 +10,7 @@
    [mysystem.ui.sdc]
    [mysystem.ui.htmx]
    [mysystem.ui.calendar]
+   [mysystem.ui.select]
    [mysystem.ui.db]
    [clojure.java.io]
    [clojure.string :as str]
@@ -160,6 +161,8 @@
   (mysystem.ui.sdc/mount-routes context)
   (mysystem.ui.htmx/mount-routes context)
   (mysystem.ui.db/mount-routes context)
+  (mysystem.ui.calendar/mount-routes context)
+  (mysystem.ui.select/mount-routes context)
   :ok)
 
 (system/defstart [context _]

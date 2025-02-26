@@ -49,6 +49,7 @@
                     ["/ui/sdc" "SDC"]
                     ["/ui/tailwindui" "Tailwind"]
                     ["/ui/htmx" "htmx"]
+                    ["/ui/select" "select"]
                     ["/ui/calendar" "Calendar"]
                     ["/ui/db" "db"]
                     ]]
