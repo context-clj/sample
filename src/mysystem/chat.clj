@@ -9,10 +9,7 @@
    [clojure.string :as str]))
 
 
-
-(defn keywordize
-  "Convert string keys in a map to keywords recursively"
-  [m]
+(defn keywordize [m]
   (cond
     (map? m) (reduce-kv (fn [acc k v] (assoc acc (if (string? k) (keyword k) k) (keywordize v))) {} m)
     (sequential? m) (mapv keywordize m)
@@ -82,6 +79,10 @@
     (broadcast context "printing" [:span {:hx-ext "remove-in"} (str author " is printing...")]))
   {:status 200})
 
+(defn format-time [instant]
+  (when instant
+    (subs (second (str/split (str instant) #"( |\.)")) 0 5)))
+
 (defn render-messages [context user & [idx no-oob]]
   (let [idx (or idx 0)
         messages (pg.repo/select context {:table "messages" :where [:> :id [:pg/param idx]] :order-by :id})
@@ -97,7 +98,10 @@
            [:div {:class ["mt-2 shadow-md rounded-md px-2 py-1 rounded-md max-w-2xl w-fit"
                           (if (= (:author message) user) "bg-blue-50" "bg-gray-50")]}
             [:div {:class "text-xs font-semibold text-zinc-500 py-0.5"} (:author message)]
-            [:div {:class "text-sm"} (:text message)]]])]))))
+            [:div {:class "text-sm"} (:text message)]
+            [:div {:class "text-gray-400 text-right text-[0.6rem]"} (format-time (:created_at message))]
+            ]])]))))
+
 
 
 (defn ^{:http {:path "/ui/chat/new-messages" :method :get}}
@@ -106,9 +110,7 @@
         user (get-in request [:cookies "username" :value])]
     (h/html-response (render-messages context user from-id))))
 
-
-(defn
-  ^{:http {:path "/ui/chat" :method :post}}
+(defn ^{:http {:path "/ui/chat" :method :post}}
   create-message [context request]
   (let [message (get-form request)
         user (get-in request [:cookies "username" :value]) ]
