@@ -1,0 +1,104 @@
+@import "tailwindcss";
+@import "../../libs/http/resources/public/uui.css";
+
+
+.uui- {
+    .landing {
+
+        h1 {
+            @apply text-5xl font-bold;
+        }
+
+    }
+
+    .button {
+        @apply border px-4 py-1 rounded-md cursor-pointer text-sm font-semibold;
+
+        &.lg {
+            @apply border px-6 py-2 rounded-md cursor-pointer font-semibold;
+        }
+    }
+    a.button {
+        @apply inline-block hover:bg-sky-100;
+    }
+
+    a {
+        @apply text-sky-600;
+    }
+
+    h1 {
+        @apply text-3xl font-bold;
+    }
+
+    h2 {
+        @apply text-2xl font-bold;
+    }
+
+    h3 {
+        @apply text-xl font-semibold;
+    }
+
+    main {
+        article {
+            @apply mx-auto max-w-6xl px-6 py-4;
+        }
+    }
+
+    header {
+        @apply mx-auto max-w-6xl px-6;
+
+        nav {
+            @apply flex items-center;
+            ul {
+                @apply flex items-center;
+                li {
+                    a {
+                        @apply block;
+                    }
+                }
+            }
+        }
+    }
+
+    footer {
+        @apply mx-auto max-w-6xl px-6 pt-16 pb-8 sm:pt-24 lg:px-8 lg:pt-32;
+    }
+
+}
+
+[data-expanded="on"]  {
+    max-height: 500px;
+    opacity: 1;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+[data-expanded="off"] {
+    max-height: 0;
+    opacity: 0.5;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+[data-open="on"]  {
+    .expander {
+        transform: rotate(90deg);
+        transition: transform 0.3s ease;
+    }
+}
+
+[data-open="off"]  {
+    .expander {
+        transform: rotate(0deg);
+        transition: transform 0.3s ease;
+    }
+}
+
+[data-copied="yes"] {
+    .copy-status {
+        @apply text-green-500;
+    }
+}
+
+[data-hidden="yes"] {
+    display: none;
+}

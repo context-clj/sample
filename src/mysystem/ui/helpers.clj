@@ -9,6 +9,9 @@
 (defn hx-target [request]
   (get-in request [:headers "hx-target"]))
 
+(defn html [x]
+  (hiccup2.core/html x))
+
 (defn hiccup [content]
   (str "<!DOCTYPE html>\n" (hiccup2.core/html content)))
 
@@ -28,13 +31,16 @@
             body
             [:html
              [:head
-              [:script {:src "/static/tw.js"}]
+              ;; [:script {:src "/static/tw.js"}]
               [:script {:src "/static/htmx.js"}]
+              [:script {:src "/static/htmx-sse.js"}]
               [:script {:src "/static/multi-swap.js"}] ;; https://v1.htmx.org/extensions/multi-swap/
+              [:link {:rel "stylesheet" :href "/static/app.build.css"}]
               [:script {:src "/static/app.js"}]
-              [:style {:rel "stylesheet"} "body { font-family: sans-serif; font-size: 13px;}"]
+              [:meta {:charset "UTF-8"}]
+              [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
               [:meta {:name "htmx-config", :content "{\"scrollIntoViewOnBoost\":false}"}]]
-             [:body.bg-zinc-100.text-gray-600 {:hx-boost "true"} body]]))})
+             [:body.text-gray-600 {:hx-boost "true" :hx-ext "sse"} body]]))})
 
 (defn fragment [content]
   {:status 200
@@ -63,7 +69,7 @@
 (defn layout [context request fragments-map]
   (let [body [:div#content.flex.items-top
               (menu context request)
-              [:div.flex-1.my-2.mx-4 {:class "grow p-6 lg:rounded-lg lg:bg-white  lg:ring-1 lg:shadow-xs lg:ring-zinc-950/5 "} ;;dark:lg:bg-zinc-900 dark:lg:ring-white/10
+              [:div.flex-1.my-2.mx-4 {:class "grow p-4 lg:rounded-lg lg:bg-white  lg:ring-1 lg:shadow-xs lg:ring-zinc-950/5 "}
                (when-let [cnt (:content fragments-map)]
                  [:div#content.flex-1 (if (fn? cnt) (cnt) cnt)])]]]
     (if-let [trg (hx-target request)]

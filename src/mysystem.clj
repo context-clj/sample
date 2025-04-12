@@ -33,9 +33,15 @@
 
 
 (comment
+  (require '[system.dev :as def])
+
+  (def/update-libs)
+
   (def context (system/start-system {:services ["http" "http.openapi" "pg" "pg.repo" "mysystem" "mysystem.ui"]
                                      :http {:port 8884}
                                      :pg {:host "localhost" :port 5400 :user "admin" :database "mysystem" :password "admin"}}))
+
+
 
   (system/stop-system context)
 

@@ -82,3 +82,121 @@ function inputWithPopup(id, pid) {
   });
 }
 
+function byid(id) {
+    return document.getElementById(id);
+}
+function expandHeight(targ) {
+    var pane = byid(targ.dataset.expand);
+    if(!pane) {
+        console.error('data-expand: can not find element', targ, targ.dataset.expand)
+        return;
+    }
+
+    console.log('show/hide', targ.dataset.expandshow)
+    if( pane.dataset.expanded != 'on') {
+        pane.dataset.expanded = 'on'
+        targ.dataset.open = 'on'
+    } else {
+        pane.dataset.expanded = 'off'
+        targ.dataset.open = 'off'
+    }
+}
+
+function copyFrom(targ) {
+    navigator.clipboard.writeText(byid(targ.dataset.copyfrom).innerText)
+    targ.dataset.copied = 'yes'
+    setTimeout(()=> { targ.dataset.copied = '' }, 2000)
+}
+
+function toggle(targ) {
+    var el = byid(targ.dataset.toggle)
+    var grp = targ.dataset.togglegroup;
+
+    if(!!grp) {
+        document.querySelectorAll(`[data-togglegroup='${grp}']`).forEach((el)=>{
+            if(el != targ) {
+                var tel = byid(el.dataset.toggle);
+                if(tel){
+                    tel.dataset.hidden = 'yes'
+                }
+            }
+        })
+    }
+
+
+    if(el.dataset.hidden == "yes") {
+        el.dataset.hidden = ''
+    } else {
+        el.dataset.hidden == "yes"
+    }
+}
+
+document.addEventListener('click', (e) => {
+    // console.log('Clicked:', e.target);
+    var targ = event.target.closest('[data-expand]');
+    if(targ) { expandHeight(targ) }
+
+    var ctarg = event.target.closest('[data-copyfrom]');
+    if(ctarg) { copyFrom(ctarg) }
+
+    var ttarg = event.target.closest('[data-toggle]');
+    if(ttarg) { toggle(ttarg) }
+
+}, true);
+
+
+if (!window._debounceTimers) {
+    window._debounceTimers = {};
+}
+function debounce_ajax(method, uri, opts, wait, channel) {
+  clearTimeout(window._debounceTimers[channel]);
+  window._debounceTimers[channel] = setTimeout(function () {
+    htmx.ajax(method, uri, opts);
+  }, wait);
+}
+
+htmx.defineExtension('publish-event', {
+  init : function(api) {
+    console.log('publish-event init')
+  },
+  onEvent : function(name, e) {
+    if(e.type == 'htmx:afterProcessNode') {
+      const target = e.target;
+      if (target) {
+        const eventName = target.getAttribute('publish-event');
+        target.addEventListener('keyup', (e) => {
+          debounce_ajax('GET', '/ui/chat/printing', {target: '#null'}, 300, eventName)
+        })
+      }
+    }
+  }
+})
+
+htmx.defineExtension('remove-in', {
+  onEvent : function(name, e) {
+    //console.log('event', e, e.target, e.type)
+    if(e.type == 'htmx:load') {
+      setTimeout(() => {
+        e?.target?.remove();
+      }, 1000);
+    }
+  }
+})
+
+htmx.defineExtension('scroll-to-bottom', {
+  onEvent : function(name, e) {
+    //console.log('scroll-to-bottom', e.type, e.target)
+    const target = e.target;
+    if( target && (e.type == 'htmx:afterSwap' || e.type == 'htmx:afterProcessNode') ){
+      const id = target.getAttribute( "scroll-to-bottom") 
+      //console.log('scroll', id)
+      const el = htmx.find(id);
+      if(el) {
+        //console.log('scroll', el, el.scrollHeight)
+        setTimeout(() => {
+          el.scrollTo({top: el.scrollHeight, behavior: 'smooth' });
+        }, 100)
+      }
+    }
+  }
+})

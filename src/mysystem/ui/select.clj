@@ -106,6 +106,7 @@ sel.focus()
 (defn form-result [context request opts]
   [:pre {:class "mt-4 bg-gray-100 rounded p-6"} (pr-str (slurp (:body request)))])
 
+
 (defn index-html [context request]
   (let [today (java.time.LocalDate/now)]
     (h/layout
@@ -115,9 +116,7 @@ sel.focus()
        [:form {:hx-post (h/rpc #'form-result) :hx-target "#form-result"}
         select-style
         (select context {:table "information_schema.tables" :column "table_name" :html #'table-item})
-
         [:br]
-        ;; (select context {:table "information_schema.columns" :column "column_name" :html #'column-item})
         (h/btn {:type "submit"} "Submit")
         ]
        [:div#form-result]]})))

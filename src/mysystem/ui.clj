@@ -12,6 +12,7 @@
    [mysystem.ui.calendar]
    [mysystem.ui.select]
    [mysystem.ui.db]
+   [mysystem.chat]
    [clojure.java.io]
    [clojure.string :as str]
    [mysystem.toolkit]
@@ -155,6 +156,8 @@
   (http/register-endpoint context {:method :put :path  "/ui/rpc"  :fn #'ui-rpc})
 
   (http/register-endpoint context {:method :get :path "/ui/kit" :fn #'mysystem.toolkit/index})
+
+  (mysystem.chat/mount-routes context)
 
   (mysystem.ui.notebooks/mount-routes context)
   (mysystem.ui.tailwindui/mount-routes context)
