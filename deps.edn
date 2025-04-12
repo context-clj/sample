@@ -1,4 +1,4 @@
-{:paths ["src"]
+{:paths ["src" "resources"]
  :jvm-opts ["-Djdk.attach.allowAttachSelf"]
  :deps {org.clojure/clojure    {:mvn/version "1.12.0"}
         context/system      {:local/root "./libs/system"}

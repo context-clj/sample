@@ -45,7 +45,6 @@
 
   (def context (system/start-system system-config))
 
-
   (system/stop-system context)
 
   (migrate context)
