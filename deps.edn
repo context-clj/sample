@@ -19,4 +19,8 @@
   {:extra-deps {lambdaisland/kaocha {:mvn/version "1.77.1236"}}
    :extra-paths ["test"]
    ;; :jvm-opts   ^:replace ["-XX:-OmitStackTraceInFastThrow"]
-   :main-opts  ["-m" "kaocha.runner"]}}}
+   :main-opts  ["-m" "kaocha.runner"]}
+
+  :build
+  {:deps {io.github.clojure/tools.build {:mvn/version "0.10.7"}}
+   :ns-default build}}}

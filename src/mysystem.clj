@@ -31,16 +31,19 @@
   (http/register-endpoint context {:method :get :path "/patient" :fn #'patient-json})
   {})
 
+(def system-config {:services ["http" "http.openapi" "pg" "pg.repo" "mysystem" "mysystem.ui"]
+                    :http {:port 8884}
+                    :pg {:host "localhost" :port 5400 :user "admin" :database "mysystem" :password "admin"}})
+
+(defn main [& _args]
+  (system/start-system system-config))
 
 (comment
   (require '[system.dev :as def])
 
   (def/update-libs)
 
-  (def context (system/start-system {:services ["http" "http.openapi" "pg" "pg.repo" "mysystem" "mysystem.ui"]
-                                     :http {:port 8884}
-                                     :pg {:host "localhost" :port 5400 :user "admin" :database "mysystem" :password "admin"}}))
-
+  (def context (system/start-system system-config))
 
 
   (system/stop-system context)
